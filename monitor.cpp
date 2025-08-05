@@ -1,32 +1,30 @@
 #include "./monitor.h"
-#include <assert.h>
-#include <thread>
-#include <chrono>
-#include <iostream>
-using std::cout, std::flush, std::this_thread::sleep_for, std::chrono::seconds;
 
-void showAlert(const char* message) {
-    cout << message << "\n";
-    for (int i = 0; i < 6; i++) {
-        cout << "\r* " << flush;
-        sleep_for(seconds(1));
-        cout << "\r *" << flush;
-        sleep_for(seconds(1));
+struct VitalRange {
+    float value;
+    float min;
+    float max;
+    VitalType type;
+};
+
+static bool isInRange(float value, float min, float max) {
+    return value >= min && value <= max;
+}
+
+VitalType checkVitals(float temperature, float pulseRate, float spo2) {
+    VitalRange vitals[] = {
+        {temperature, 95.0f, 102.0f, TEMP_CRITICAL},
+        {pulseRate,   60.0f, 100.0f, PULSE_CRITICAL},
+        {spo2,        90.0f, 150.0f, SPO2_CRITICAL} // 150 is a practical upper bound for SpO2
+    };
+    for(const auto& vital : vitals) {
+        if (!isInRange(vital.value, vital.min, vital.max)) {
+            return vital.type;
+        }
     }
+    return VITALS_OK;
 }
 
 int vitalsOk(float temperature, float pulseRate, float spo2) {
-    if (temperature > 102 || temperature < 95) {
-        showAlert("Temperature is critical!");
-        return 0;
-    }
-    if (pulseRate < 60 || pulseRate > 100) {
-        showAlert("Pulse Rate is out of range!");
-        return 0;
-    }
-    if (spo2 < 90) {
-        showAlert("Oxygen Saturation out of range!");
-        return 0;
-    }
-    return 1;
+    return checkVitals(temperature, pulseRate, spo2) == VITALS_OK ? 1 : 0;
 }
