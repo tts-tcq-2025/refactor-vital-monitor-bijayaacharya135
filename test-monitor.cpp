@@ -1,39 +1,39 @@
 #include <gtest/gtest.h>
-#include "./monitor.h"
+#include "monitor.h"
+#include "vitals.h"
 
-TEST(Monitor, AllVitalsNormal) {
-    ASSERT_TRUE(vitalsOk(98.6, 72, 98));
+TEST(Vitals, TemperatureConditions) {
+    EXPECT_EQ(mapToCondition(94.0f, tempBoundary), HYPO);
+    EXPECT_EQ(mapToCondition(95.5f, tempBoundary), NEAR_HYPO);
+    EXPECT_EQ(mapToCondition(98.0f, tempBoundary), NORMAL);
+    EXPECT_EQ(mapToCondition(101.0f, tempBoundary), NEAR_HYPER);
+    EXPECT_EQ(mapToCondition(103.0f, tempBoundary), HYPER);
 }
 
-TEST(Monitor, TemperatureLow) {
-    ASSERT_FALSE(vitalsOk(94.9, 72, 98));
+TEST(Vitals, PulseConditions) {
+    EXPECT_EQ(mapToCondition(59.0f, pulseBoundary), HYPO);
+    EXPECT_EQ(mapToCondition(61.0f, pulseBoundary), NEAR_HYPO);
+    EXPECT_EQ(mapToCondition(70.0f, pulseBoundary), NORMAL);
+    EXPECT_EQ(mapToCondition(99.0f, pulseBoundary), NEAR_HYPER);
+    EXPECT_EQ(mapToCondition(101.0f, pulseBoundary), HYPER);
 }
 
-TEST(Monitor, TemperatureHigh) {
-    ASSERT_FALSE(vitalsOk(102.1, 72, 98));
+TEST(Vitals, Spo2Conditions) {
+    EXPECT_EQ(mapToCondition(89.0f, spo2Boundary), HYPO);
+    EXPECT_EQ(mapToCondition(91.0f, spo2Boundary), NEAR_HYPO);
+    EXPECT_EQ(mapToCondition(98.0f, spo2Boundary), NORMAL);
+    EXPECT_EQ(mapToCondition(149.0f, spo2Boundary), NEAR_HYPER);
+    EXPECT_EQ(mapToCondition(151.0f, spo2Boundary), HYPER);
 }
 
-TEST(Monitor, PulseLow) {
-    ASSERT_FALSE(vitalsOk(98.6, 59, 98));
-}
+TEST(Vitals, OverallStatus) {
+    VitalsResult ok = evaluateVitals(98.0f, 70.0f, 98.0f);
+    EXPECT_TRUE(overallVitalsOk(ok.temp, ok.pulse, ok.spo2));
 
-TEST(Monitor, PulseHigh) {
-    ASSERT_FALSE(vitalsOk(98.6, 101, 98));
-}
+    VitalsResult warning = evaluateVitals(95.5f, 70.0f, 98.0f);
+    EXPECT_TRUE(overallVitalsOk(warning.temp, warning.pulse, warning.spo2));
 
-TEST(Monitor, Spo2Low) {
-    ASSERT_FALSE(vitalsOk(98.6, 72, 89));
-}
-
-TEST(Monitor, EdgeCases) {
-    ASSERT_TRUE(vitalsOk(95.0, 60.0, 90.0));
-    ASSERT_TRUE(vitalsOk(102.0, 100.0, 90.0));
-}
-
-TEST(Monitor, StatusEnum) {
-    ASSERT_EQ(checkVitals(94.0, 70, 98), TEMP_CRITICAL);
-    ASSERT_EQ(checkVitals(98.6, 101, 98), PULSE_CRITICAL);
-    ASSERT_EQ(checkVitals(98.6, 70, 80), SPO2_CRITICAL);
-    ASSERT_EQ(checkVitals(98.6, 70, 98), VITALS_OK);
+    VitalsResult critical = evaluateVitals(94.0f, 70.0f, 98.0f);
+    EXPECT_FALSE(overallVitalsOk(critical.temp, critical.pulse, critical.spo2));
 }
 
