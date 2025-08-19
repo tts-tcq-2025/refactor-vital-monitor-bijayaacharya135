@@ -14,7 +14,7 @@ void printVitalsResult(const VitalsResult& result) {
 }
 
 int main() {
-    float temperature = 95.5f, pulse = 62.0f, spo2 = 92.0f;
+    float temperature = 95.0f, pulse = 60.0f, spo2 = 90.0f;
     VitalsResult result = evaluateVitals(temperature, pulse, spo2);
     printVitalsResult(result);
     return 0;
