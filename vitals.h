@@ -1,16 +1,17 @@
 #pragma once
 
 enum VitalCondition {
-    HYPO, NEAR_HYPO, NORMAL, NEAR_HYPER, HYPER
+    CRITICAL_LOW, WARNING_LOW, NORMAL, WARNING_HIGH, CRITICAL_HIGH
 };
 
 struct VitalBoundary {
-    float boundaries[5]; // [lower, near_low, normal_low, normal_high, near_high]
+    float min;
+    float max;
+    float tolerance;
     const char* messages[5];
 };
 
 VitalCondition mapToCondition(float value, const VitalBoundary& boundary);
 const char* conditionToMessage(VitalCondition cond, const VitalBoundary& boundary);
 bool isCritical(VitalCondition cond);
-bool isWarning(VitalCondition cond);
 bool overallVitalsOk(VitalCondition temp, VitalCondition pulse, VitalCondition spo2);
