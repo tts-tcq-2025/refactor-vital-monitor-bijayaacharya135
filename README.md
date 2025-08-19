@@ -46,3 +46,14 @@ Shorten the Semantic distance
 - Functional to express relation between input and output
 - Object oriented to encapsulate state with actions
 - Aspect oriented to capture repeating aspects
+
+TDD
+Implemented extension 1
+Switch case is removed from previous implementation.
+
+vitals.h	- Pure functions and data structures for vital sign logic
+vitals.cpp - pure functions (no I/O)
+monitor.h	- Data for boundaries/messages
+monitor.cpp -	Implementation of composition functions (no I/O)
+main.cpp	- I/O code: reading values, printing results
+test-monitor.cpp -	Unit tests covering all conditions
