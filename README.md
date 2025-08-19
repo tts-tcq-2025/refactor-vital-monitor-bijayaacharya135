@@ -47,7 +47,8 @@ Shorten the Semantic distance
 - Object oriented to encapsulate state with actions
 - Aspect oriented to capture repeating aspects
 
-TDD
+## TDD
+
 Implemented extension 1
 Switch case is removed from previous implementation.
 
