@@ -8,6 +8,7 @@ struct VitalBoundary {
     float min;
     float max;
     float tolerance;
+    float limits[5];
     const char* messages[5];
 };
 
