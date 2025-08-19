@@ -1,30 +1,22 @@
-#include "./monitor.h"
+#include "monitor.h"
 
-struct VitalRange {
-    float value;
-    float min;
-    float max;
-    VitalType type;
+const VitalBoundary tempBoundary = {
+    {95.0f, 96.53f, 96.54f, 100.47f, 102.0f},
+    {"Hypothermia", "Near Hypothermia", "Normal", "Near Hyperthermia", "Hyperthermia"}
+};
+const VitalBoundary pulseBoundary = {
+    {60.0f, 61.5f, 61.6f, 98.5f, 100.0f},
+    {"Bradycardia", "Near Bradycardia", "Normal", "Near Tachycardia", "Tachycardia"}
+};
+const VitalBoundary spo2Boundary = {
+    {90.0f, 91.35f, 91.36f, 148.65f, 150.0f},
+    {"Hypoxemia", "Near Hypoxemia", "Normal", "Near Hyperoxemia", "Hyperoxemia"}
 };
 
-static bool isInRange(float value, float min, float max) {
-    return value >= min && value <= max;
-}
-
-VitalType checkVitals(float temperature, float pulseRate, float spo2) {
-    VitalRange vitals[] = {
-        {temperature, 95.0f, 102.0f, TEMP_CRITICAL},
-        {pulseRate,   60.0f, 100.0f, PULSE_CRITICAL},
-        {spo2,        90.0f, 150.0f, SPO2_CRITICAL} // 150 is a practical upper bound for SpO2
-    };
-    for(const auto& vital : vitals) {
-        if (!isInRange(vital.value, vital.min, vital.max)) {
-            return vital.type;
-        }
-    }
-    return VITALS_OK;
-}
-
-int vitalsOk(float temperature, float pulseRate, float spo2) {
-    return checkVitals(temperature, pulseRate, spo2) == VITALS_OK ? 1 : 0;
+VitalsResult evaluateVitals(float temperature, float pulse, float spo2) {
+    VitalsResult result;
+    result.temp = mapToCondition(temperature, tempBoundary);
+    result.pulse = mapToCondition(pulse, pulseBoundary);
+    result.spo2 = mapToCondition(spo2, spo2Boundary);
+    return result;
 }
