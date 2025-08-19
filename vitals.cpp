@@ -1,11 +1,11 @@
 #include "vitals.h"
 
 VitalCondition mapToCondition(float value, const VitalBoundary& boundary) {
-    if (value < boundary.boundaries[0]) return HYPO;
-    if (value < boundary.boundaries[1]) return NEAR_HYPO;
-    if (value <= boundary.boundaries[3]) return NORMAL;
-    if (value <= boundary.boundaries[4]) return NEAR_HYPER;
-    return HYPER;
+    if (value < boundary.min) return CRITICAL_LOW;
+    if (value < boundary.min + boundary.tolerance) return WARNING_LOW;
+    if (value <= boundary.max - boundary.tolerance) return NORMAL;
+    if (value <= boundary.max) return WARNING_HIGH;
+    return CRITICAL_HIGH;
 }
 
 const char* conditionToMessage(VitalCondition cond, const VitalBoundary& boundary) {
@@ -13,11 +13,7 @@ const char* conditionToMessage(VitalCondition cond, const VitalBoundary& boundar
 }
 
 bool isCritical(VitalCondition cond) {
-    return cond == HYPO || cond == HYPER;
-}
-
-bool isWarning(VitalCondition cond) {
-    return cond == NEAR_HYPO || cond == NEAR_HYPER;
+    return cond == CRITICAL_LOW || cond == CRITICAL_HIGH;
 }
 
 bool overallVitalsOk(VitalCondition temp, VitalCondition pulse, VitalCondition spo2) {
