@@ -1,11 +1,15 @@
 #pragma once
+#include "vitals.h"
 
-enum VitalType {
-    VITALS_OK,
-    TEMP_CRITICAL,
-    PULSE_CRITICAL,
-    SPO2_CRITICAL
+extern const VitalBoundary tempBoundary;
+extern const VitalBoundary pulseBoundary;
+extern const VitalBoundary spo2Boundary;
+
+struct VitalsResult {
+    VitalCondition temp;
+    VitalCondition pulse;
+    VitalCondition spo2;
 };
 
-VitalType checkVitals(float temperature, float pulseRate, float spo2);
-int vitalsOk(float temperature, float pulseRate, float spo2);
+VitalsResult evaluateVitals(float temperature, float pulse, float spo2);
+
