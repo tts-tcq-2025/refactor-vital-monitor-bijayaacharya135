@@ -18,3 +18,4 @@ int main() {
     VitalsResult result = evaluateVitals(temperature, pulse, spo2);
     printVitalsResult(result);
     return 0;
+}
