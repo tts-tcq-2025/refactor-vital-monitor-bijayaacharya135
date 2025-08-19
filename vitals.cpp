@@ -1,11 +1,30 @@
 #include "vitals.h"
 
+struct ConditionRange {
+    float lower;
+    float upper;
+    VitalCondition condition;
+};
+
 VitalCondition mapToCondition(float value, const VitalBoundary& boundary) {
-    if (value < boundary.min) return CRITICAL_LOW;
-    if (value < boundary.min + boundary.tolerance) return WARNING_LOW;
-    if (value <= boundary.max - boundary.tolerance) return NORMAL;
-    if (value <= boundary.max) return WARNING_HIGH;
-    return CRITICAL_HIGH;
+    float min = boundary.min;
+    float max = boundary.max;
+    float tol = boundary.tolerance;
+
+    ConditionRange ranges[] = {
+        { -INFINITY, min, CRITICAL_LOW },
+        { min, min + tol, WARNING_LOW },
+        { min + tol, max - tol, NORMAL },
+        { max - tol, max, WARNING_HIGH },
+        { max, INFINITY, CRITICAL_HIGH }
+    };
+
+    for (const auto& r : ranges) {
+        if (value >= r.lower && value < r.upper) {
+            return r.condition;
+        }
+    }
+    return NORMAL;
 }
 
 const char* conditionToMessage(VitalCondition cond, const VitalBoundary& boundary) {
