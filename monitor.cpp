@@ -1,38 +1,22 @@
-#include "./monitor.h"
-#include <assert.h>
-#include <thread>
-#include <chrono>
-#include <iostream>
-using std::cout, std::flush, std::this_thread::sleep_for, std::chrono::seconds;
+#include "monitor.h"
 
-int vitalsOk(float temperature, float pulseRate, float spo2) {
-  if (temperature > 102 || temperature < 95) {
-    cout << "Temperature is critical!\n";
-    for (int i = 0; i < 6; i++) {
-      cout << "\r* " << flush;
-      sleep_for(seconds(1));
-      cout << "\r *" << flush;
-      sleep_for(seconds(1));
-    }
-    return 0;
-  } else if (pulseRate < 60 || pulseRate > 100) {
-    cout << "Pulse Rate is out of range!\n";
-    for (int i = 0; i < 6; i++) {
-      cout << "\r* " << flush;
-      sleep_for(seconds(1));
-      cout << "\r *" << flush;
-      sleep_for(seconds(1));
-    }
-    return 0;
-  } else if (spo2 < 90) {
-    cout << "Oxygen Saturation out of range!\n";
-    for (int i = 0; i < 6; i++) {
-      cout << "\r* " << flush;
-      sleep_for(seconds(1));
-      cout << "\r *" << flush;
-      sleep_for(seconds(1));
-    }
-    return 0;
-  }
-  return 1;
+const VitalBoundary tempBoundary = {
+    {95.0f, 96.53f, 96.54f, 100.47f, 102.0f},
+    {"Hypothermia", "Near Hypothermia", "Normal", "Near Hyperthermia", "Hyperthermia"}
+};
+const VitalBoundary pulseBoundary = {
+    {60.0f, 61.5f, 61.6f, 98.5f, 100.0f},
+    {"Bradycardia", "Near Bradycardia", "Normal", "Near Tachycardia", "Tachycardia"}
+};
+const VitalBoundary spo2Boundary = {
+    {90.0f, 91.35f, 91.36f, 148.65f, 150.0f},
+    {"Hypoxemia", "Near Hypoxemia", "Normal", "Near Hyperoxemia", "Hyperoxemia"}
+};
+
+VitalsResult evaluateVitals(float temperature, float pulse, float spo2) {
+    VitalsResult result;
+    result.temp = mapToCondition(temperature, tempBoundary);
+    result.pulse = mapToCondition(pulse, pulseBoundary);
+    result.spo2 = mapToCondition(spo2, spo2Boundary);
+    return result;
 }
