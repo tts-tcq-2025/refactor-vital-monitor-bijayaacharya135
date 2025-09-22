@@ -13,4 +13,6 @@ struct VitalsResult {
 };
 
 // Pure function for evaluating all vitals
-VitalsResult evaluateVitals(float temperature, float pulse, float spo2);
+// Added: Accept unit for temperature
+VitalsResult evaluateVitals(float temperature, TempUnit tempUnit, float pulse, float spo2);
+
