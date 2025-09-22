@@ -49,7 +49,7 @@ Shorten the Semantic distance
 
 ## TDD
 
-Implemented extension 1
+Implemented extension 1,2,3
 
 Extension 1: Early Warning
 Care-givers need early warnings to take action, in addition to the alarm that you print after the limit is breached. Introduce a 'warning' level with a tolerance of 1.5% of the upper-limit.
@@ -60,6 +60,16 @@ Example: If the body-temperature extremeties are 95 and 102, the warning-toleran
 102-1.53 to 102 Warning: Approaching hyperthermia
 Same for pulse-rate and SPO2.
 
+Extension 2: Support a language in addition to English
+Our market has expanded to German-speaking countries! Switch the language of the printed user-messages based on a global variable.
+Use Google translate if you aren't familiar with German.
+
+Keep in mind: We could add more languages in future. Minimize the code-change required.
+
+Extension 3: Accept input in different units
+Some sensors report the temperature in Celcius. Make provision to express the unit along with the measurement. Avoid repeating the limits in different units.
+
+
 Switch case is removed from previous implementation.
 
 vitals.h	- Pure functions and data structures for vital sign logic
@@ -69,6 +79,9 @@ vitals.cpp - pure functions (no I/O)
 monitor.h	- Data for boundaries/messages
 
 monitor.cpp -	Implementation of composition functions (no I/O)
+
+more units can be added by extending the TempUnit enum and conversion logic.
+
 
 main.cpp	- I/O code: reading values, printing results
 
