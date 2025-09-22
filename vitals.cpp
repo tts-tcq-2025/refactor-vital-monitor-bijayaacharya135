@@ -1,34 +1,30 @@
 #include "vitals.h"
+#include <cmath>
 
-struct ConditionRange {
-    float lower;
-    float upper;
-    VitalCondition condition;
-};
-
+// Early warning logic using warningTolerance
 VitalCondition mapToCondition(float value, const VitalBoundary& boundary) {
     float min = boundary.min;
     float max = boundary.max;
-    float tol = boundary.tolerance;
+    float tol = boundary.warningTolerance;
 
-    ConditionRange ranges[] = {
-        { -INFINITY, min, CRITICAL_LOW },
-        { min, min + tol, WARNING_LOW },
-        { min + tol, max - tol, NORMAL },
-        { max - tol, max, WARNING_HIGH },
-        { max, INFINITY, CRITICAL_HIGH }
-    };
-
-    for (const auto& r : ranges) {
-        if (value >= r.lower && value < r.upper) {
-            return r.condition;
-        }
-    }
-    return NORMAL;
+    if (value < min) return CRITICAL_LOW;
+    if (value < min + tol) return WARNING_LOW;
+    if (value < max - tol) return NORMAL;
+    if (value < max) return WARNING_HIGH;
+    return CRITICAL_HIGH;
 }
 
-const char* conditionToMessage(VitalCondition cond, const VitalBoundary& boundary) {
-    return boundary.messages[cond];
+// Language support: fetch message from map using language code
+std::string conditionToMessage(VitalCondition cond, const VitalBoundary& boundary, const LanguageCode& lang) {
+    auto langIt = boundary.messages.find(lang);
+    if (langIt != boundary.messages.end()) {
+        auto condIt = langIt->second.find(cond);
+        if (condIt != langIt->second.end()) {
+            return condIt->second;
+        }
+    }
+    // Fallback to English if not found
+    return boundary.messages.at("en").at(cond);
 }
 
 bool isCritical(VitalCondition cond) {
