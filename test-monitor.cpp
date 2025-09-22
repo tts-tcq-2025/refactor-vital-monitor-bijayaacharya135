@@ -26,6 +26,12 @@ TEST(Vitals, Spo2Conditions) {
     EXPECT_EQ(mapToCondition(151.0f, spo2Boundary), CRITICAL_HIGH);
 }
 
+TEST(Vitals, LanguageMessages) {
+    EXPECT_EQ(conditionToMessage(CRITICAL_LOW, tempBoundary, "en"), "Hypothermia");
+    EXPECT_EQ(conditionToMessage(CRITICAL_LOW, tempBoundary, "de"), "Unterkühlung");
+    EXPECT_EQ(conditionToMessage(CRITICAL_LOW, tempBoundary, "fr"), "Hypothermie");
+}
+
 TEST(Vitals, OverallStatus) {
     VitalsResult ok = evaluateVitals(98.0f, 70.0f, 98.0f);
     EXPECT_TRUE(overallVitalsOk(ok.temp, ok.pulse, ok.spo2));
