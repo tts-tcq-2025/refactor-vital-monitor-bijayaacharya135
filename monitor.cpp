@@ -85,9 +85,11 @@ const VitalBoundary spo2Boundary = {
     }
 };
 
-VitalsResult evaluateVitals(float temperature, float pulse, float spo2) {
+// Added: Accept unit for temperature
+VitalsResult evaluateVitals(float temperature, TempUnit tempUnit, float pulse, float spo2) {
     VitalsResult result;
-    result.temp = mapToCondition(temperature, tempBoundary);
+    float tempF = toFahrenheit(temperature, tempUnit);
+    result.temp = mapToCondition(tempF, tempBoundary);
     result.pulse = mapToCondition(pulse, pulseBoundary);
     result.spo2 = mapToCondition(spo2, spo2Boundary);
     return result;
