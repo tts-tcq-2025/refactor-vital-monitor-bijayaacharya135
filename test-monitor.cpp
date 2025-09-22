@@ -2,12 +2,21 @@
 #include "monitor.h"
 #include "vitals.h"
 
-TEST(Vitals, TemperatureConditions) {
+TEST(Vitals, TemperatureConditionsFahrenheit) {
     EXPECT_EQ(mapToCondition(94.0f, tempBoundary), CRITICAL_LOW);
     EXPECT_EQ(mapToCondition(95.5f, tempBoundary), WARNING_LOW);
     EXPECT_EQ(mapToCondition(98.0f, tempBoundary), NORMAL);
     EXPECT_EQ(mapToCondition(101.0f, tempBoundary), WARNING_HIGH);
     EXPECT_EQ(mapToCondition(103.0f, tempBoundary), CRITICAL_HIGH);
+}
+
+TEST(Vitals, TemperatureConditionsCelsius) {
+    // 95 F = 35 C, 102 F = 38.888... C
+    EXPECT_EQ(evaluateVitals(34.0f, CELSIUS, 70.0f, 98.0f).temp, CRITICAL_LOW); // < 35 C
+    EXPECT_EQ(evaluateVitals(35.8f, CELSIUS, 70.0f, 98.0f).temp, WARNING_LOW);  // ~96.44 F
+    EXPECT_EQ(evaluateVitals(36.7f, CELSIUS, 70.0f, 98.0f).temp, NORMAL);       // ~98.06 F
+    EXPECT_EQ(evaluateVitals(38.0f, CELSIUS, 70.0f, 98.0f).temp, WARNING_HIGH); // ~100.4 F
+    EXPECT_EQ(evaluateVitals(40.0f, CELSIUS, 70.0f, 98.0f).temp, CRITICAL_HIGH);// > 38.88 C
 }
 
 TEST(Vitals, PulseConditions) {
@@ -33,12 +42,18 @@ TEST(Vitals, LanguageMessages) {
 }
 
 TEST(Vitals, OverallStatus) {
-    VitalsResult ok = evaluateVitals(98.0f, 70.0f, 98.0f);
+    VitalsResult ok = evaluateVitals(98.0f, FAHRENHEIT, 70.0f, 98.0f);
     EXPECT_TRUE(overallVitalsOk(ok.temp, ok.pulse, ok.spo2));
 
-    VitalsResult warning = evaluateVitals(95.5f, 70.0f, 98.0f);
+    VitalsResult warning = evaluateVitals(95.5f, FAHRENHEIT, 70.0f, 98.0f);
     EXPECT_TRUE(overallVitalsOk(warning.temp, warning.pulse, warning.spo2));
 
-    VitalsResult critical = evaluateVitals(94.0f, 70.0f, 98.0f);
+    VitalsResult critical = evaluateVitals(94.0f, FAHRENHEIT, 70.0f, 98.0f);
     EXPECT_FALSE(overallVitalsOk(critical.temp, critical.pulse, critical.spo2));
+
+    // Test with Celsius input
+    VitalsResult okC = evaluateVitals(36.7f, CELSIUS, 70.0f, 98.0f);
+    EXPECT_TRUE(overallVitalsOk(okC.temp, okC.pulse, okC.spo2));
+    VitalsResult criticalC = evaluateVitals(34.0f, CELSIUS, 70.0f, 98.0f);
+    EXPECT_FALSE(overallVitalsOk(criticalC.temp, criticalC.pulse, criticalC.spo2));
 }
