@@ -25,8 +25,16 @@ int main() {
     // Example: Switch to French
     // currentLang = "fr";
 
-    float temperature = 95.0f, pulse = 60.0f, spo2 = 90.0f;
-    VitalsResult result = evaluateVitals(temperature, pulse, spo2);
+   // Example: Input in Celsius
+    float temperatureC = 36.0f; // Celsius
+    float pulse = 60.0f;
+    float spo2 = 90.0f;
+    VitalsResult result = evaluateVitals(temperatureC, CELSIUS, pulse, spo2);
+    printVitalsResult(result);
+
+    // Example: Input in Fahrenheit
+    float temperatureF = 95.0f; // Fahrenheit
+    result = evaluateVitals(temperatureF, FAHRENHEIT, pulse, spo2);
     printVitalsResult(result);
 
     // Example: Print all messages for all languages
