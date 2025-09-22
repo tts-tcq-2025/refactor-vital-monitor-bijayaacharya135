@@ -34,3 +34,9 @@ bool isCritical(VitalCondition cond) {
 bool overallVitalsOk(VitalCondition temp, VitalCondition pulse, VitalCondition spo2) {
     return !(isCritical(temp) || isCritical(pulse) || isCritical(spo2));
 }
+// Added: Convert Celsius to Fahrenheit if needed
+float toFahrenheit(float value, TempUnit unit) {
+    if (unit == CELSIUS)
+        return value * 9.0f / 5.0f + 32.0f;
+    return value;
+}
