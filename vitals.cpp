@@ -3,11 +3,20 @@
 
 // Early warning logic using warningTolerance
 VitalCondition mapToCondition(float value, const VitalBoundary& boundary) {
-    if (value < boundary.min) return CRITICAL_LOW;
-    if (value < boundary.min + boundary.warningTolerance) return WARNING_LOW;
-    if (value < boundary.max - boundary.warningTolerance) return NORMAL;
-    if (value < boundary.max) return WARNING_HIGH;
-    return CRITICAL_HIGH;
+    float thresholds[4] = {
+        boundary.min,
+        boundary.min + boundary.warningTolerance,
+        boundary.max - boundary.warningTolerance,
+        boundary.max
+    };
+    VitalCondition conditions[5] = {
+        CRITICAL_LOW, WARNING_LOW, NORMAL, WARNING_HIGH, CRITICAL_HIGH
+    };
+    for (int i = 0; i < 4; ++i) {
+        if (value < thresholds[i])
+            return conditions[i];
+    }
+    return conditions[4];
 }
 
 // Language support: fetch message from map using language code
