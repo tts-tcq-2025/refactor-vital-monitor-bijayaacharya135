@@ -6,18 +6,17 @@
 LanguageCode currentLang = "en"; // "de" for German, "fr" for French
 
 std::string getOverallStatusMessage(bool ok, const LanguageCode& lang) {
-    if (ok) {
-        if (lang == "en") return "Vitals OK";
-        if (lang == "de") return "Vitalwerte OK";
-        if (lang == "fr") return "Valeurs vitales OK";
-    } else {
-        if (lang == "en") return "Vitals NOT OK";
-        if (lang == "de") return "Vitalwerte NICHT OK";
-        if (lang == "fr") return "Valeurs vitales PAS OK";
+    static const std::map<LanguageCode, std::pair<std::string, std::string>> messages = {
+        {"en", {"Vitals OK", "Vitals NOT OK"}},
+        {"de", {"Vitalwerte OK", "Vitalwerte NICHT OK"}},
+        {"fr", {"Valeurs vitales OK", "Valeurs vitales PAS OK"}}
+    };
+    auto it = messages.find(lang);
+    if (it != messages.end()) {
+        return ok ? it->second.first : it->second.second;
     }
     return ok ? "Vitals OK" : "Vitals NOT OK";
 }
-
 void printVitalsResult(const VitalsResult& result) {
     std::cout << "Temperature: " << conditionToMessage(result.temp, tempBoundary, currentLang) << std::endl;
     std::cout << "Pulse: " << conditionToMessage(result.pulse, pulseBoundary, currentLang) << std::endl;
