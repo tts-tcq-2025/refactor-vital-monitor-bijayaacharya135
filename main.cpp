@@ -1,4 +1,6 @@
 #include <iostream>
+#include <map>      // For std::map
+#include <string>   // For std::string
 #include "monitor.h"
 #include "vitals.h"
 
