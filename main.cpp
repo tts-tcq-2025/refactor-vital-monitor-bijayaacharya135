@@ -5,20 +5,24 @@
 // Use a global language code, can be changed at runtime
 LanguageCode currentLang = "en"; // "de" for German, "fr" for French
 
+std::string getOverallStatusMessage(bool ok, const LanguageCode& lang) {
+    if (ok) {
+        if (lang == "en") return "Vitals OK";
+        if (lang == "de") return "Vitalwerte OK";
+        if (lang == "fr") return "Valeurs vitales OK";
+    } else {
+        if (lang == "en") return "Vitals NOT OK";
+        if (lang == "de") return "Vitalwerte NICHT OK";
+        if (lang == "fr") return "Valeurs vitales PAS OK";
+    }
+    return ok ? "Vitals OK" : "Vitals NOT OK";
+}
+
 void printVitalsResult(const VitalsResult& result) {
     std::cout << "Temperature: " << conditionToMessage(result.temp, tempBoundary, currentLang) << std::endl;
     std::cout << "Pulse: " << conditionToMessage(result.pulse, pulseBoundary, currentLang) << std::endl;
     std::cout << "SpO2: " << conditionToMessage(result.spo2, spo2Boundary, currentLang) << std::endl;
-
-    // Print overall status in selected language
-    if (overallVitalsOk(result.temp, result.pulse, result.spo2))
-        std::cout << (currentLang == "en" ? "Vitals OK" :
-                      currentLang == "de" ? "Vitalwerte OK" :
-                      currentLang == "fr" ? "Valeurs vitales OK" : "Vitals OK") << std::endl;
-    else
-        std::cout << (currentLang == "en" ? "Vitals NOT OK" :
-                      currentLang == "de" ? "Vitalwerte NICHT OK" :
-                      currentLang == "fr" ? "Valeurs vitales PAS OK" : "Vitals NOT OK") << std::endl;
+    std::cout << getOverallStatusMessage(overallVitalsOk(result.temp, result.pulse, result.spo2), currentLang) << std::endl;
 }
 
 int main() {
