@@ -15,14 +15,15 @@ enum TempUnit {
 };
 
 struct VitalBoundary {
-    float min; // boundaries in Fahrenheit
+    float min;   // boundaries in Fahrenheit
     float max;
     float warningTolerance;
     std::map<LanguageCode, std::map<VitalCondition, std::string>> messages;
 };
 
 VitalCondition mapToCondition(float value, const VitalBoundary& boundary);
-std::string conditionToMessage(VitalCondition cond, const VitalBoundary& boundary, const LanguageCode& lang);
+std::string conditionToMessage(VitalCondition cond, const VitalBoundary& boundary,
+                              const LanguageCode& lang);
 bool isCritical(VitalCondition cond);
 bool overallVitalsOk(VitalCondition temp, VitalCondition pulse, VitalCondition spo2);
 
